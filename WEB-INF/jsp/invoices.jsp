@@ -16,7 +16,7 @@
 		<td>Company</td>
 		<td>Contact </td>
 		<td>Status</td>
-		<td>Inoice Date</td>
+		<td>Invoice Date</td>
 		<td>Start Date</td>
 		<td>End Date</td>
 		<td>Receipt</td>
