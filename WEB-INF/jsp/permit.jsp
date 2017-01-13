@@ -15,9 +15,9 @@
 		<s:if test="permit.hasBond()">
 			<s:hidden name="permit.bond_id" value="%{permit.bond_id}" />
 		</s:if>
-		<s:if test="permit.hasInvoice()">
+		<s:if test="permit.hasInvoice() && !permit.canPickInvoice()">
 			<s:hidden name="permit.invoice_id" value="%{permit.invoice_id}" />
-		</s:if>	
+		</s:if>		
   </s:else>
   <s:if test="permit.hasCompanyContact()">
 		<s:hidden name="permit.company_contact_id" value="%{permit.company_contact_id}" />
@@ -130,8 +130,8 @@
 							<th>Insurance </th> 
 							<td><s:select name="permit.insurance_id" list="permit.insurancesForSelection" value="%{permit.insurance_id}" listKey="id" listValue="info" headerKey="-1" headerValue="Pick One" /> ** </td>
 						</tr>			
-					</s:elseif>					
-					<s:if test="permit.hasInvoice()" >
+					</s:elseif>
+					<s:if test="permit.hasInvoice()">
 						<tr>
 							<th>Invoice No.</th>
 							<td>
@@ -139,12 +139,12 @@
 							</td>
 						</tr>
 					</s:if>
-					<s:elseif test="permit.canPickInvoice()">
+					<s:if test="permit.canPickInvoice()">
 						<tr>
 							<th>Invoice No.</th>
 							<td><s:select name="permit.invoice_id" value="%{permit.invoice_id}" list="%{permit.invoices}" listKey="id" listValue="invoice_num" headerKey="-1" headerValue="Pick Invoice" /></td>
 						</tr>
-					</s:elseif>
+					</s:if>
 					<tr>
 						<th valign="top">Notes </th> 
 						<td align="left"><s:textarea name="permit.notes" rows="10" cols="80" value="%{permit.notes}" /></td>

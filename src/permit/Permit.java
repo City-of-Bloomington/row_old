@@ -302,26 +302,25 @@ public class Permit implements java.io.Serializable{
 				return companyContact;
 		}
 		public List<Invoice> getInvoices(){
-				if(invoice_id.equals("")){
+				// if(invoice_id.equals("")){
 						
-						InvoiceList  ill = new InvoiceList();
-						getCompany();
-						if(company != null){
-								ill.setCompany_id(company.getId());
+				InvoiceList  ill = new InvoiceList();
+				getCompany();
+				if(company != null){
+						ill.setCompany_id(company.getId());
+				}
+				else{
+						getContact();
+						if(contact != null){
+								ill.setContact_id(contact.getId());
 						}
-						else{
-								getContact();
-								if(contact != null){
-										ill.setContact_id(contact.getId());
-								}
-						}
-						ill.setUnpaidStatus();
-						String back = ill.find();
-						if(back.equals("")){
-								List<Invoice> ones = ill.getInvoices();
-								if(ones != null && ones.size() > 0){
-										invoices = ones;
-								}
+				}
+				ill.setUnpaidStatus();
+				String back = ill.find();
+				if(back.equals("")){
+						List<Invoice> ones = ill.getInvoices();
+						if(ones != null && ones.size() > 0){
+								invoices = ones;
 						}
 				}
 				return invoices;
@@ -377,6 +376,10 @@ public class Permit implements java.io.Serializable{
 				return insurances;
 		}				
 		public boolean canPickInvoice(){
+				getInvoice();
+				if(invoice != null && !invoice.isStillOpen()){ // can not be changed
+						return false;
+				}
 				getInvoices();
 				return invoices != null && invoices.size() > 0;
 		}

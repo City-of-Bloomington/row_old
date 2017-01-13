@@ -290,6 +290,12 @@ public class Invoice implements java.io.Serializable{
 				getPermits();
 				return permits != null && permits.size() > 0;
 		}
+		public boolean isStillOpen(){
+				if(!id.equals("") && !status.equals("Billed")){
+						return false;
+				}
+				return true;
+		}
 		public boolean canAddPermits(){
 				if(!id.equals("") && status.equals("Paid")){
 						return false;
