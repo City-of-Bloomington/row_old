@@ -74,8 +74,8 @@
 						<td><s:select name="permit.permit_type" value="%{permit.permit_type}" list="{'ROW','Grading'}"  headerKey="-1" headerValue="" /></td>
 					</tr>		  
 					<tr>
-						<th>Permit Date </th> 
-						<td><s:textfield name="permit.date" size="10" value="%{permit.date}" maxlength="10" required="true" cssClass="date" /> *</td>
+						<th>Issue Date </th> 
+						<td><s:textfield name="permit.date" size="10" value="%{permit.date}" maxlength="10" cssClass="date" /> (before printing make sure you added the date)</td>
 					</tr>
 					<tr>
 						<th>Start Date </th> 
