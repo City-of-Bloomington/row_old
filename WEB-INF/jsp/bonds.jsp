@@ -13,6 +13,7 @@
 		<td>Contact </td>
 		<td>Bond Number</td>
 		<td>Expire Date</td>
+		<td>Days to Expire</td>
 		<td>Amount</td>
 		<td>Description</td>
 		<td>Type</td>
@@ -41,9 +42,14 @@
 			</td>
 			<td>
 				<s:property value="expire_date" />
-			</td>		
+			</td>
+			<td>&nbsp;
+				<s:if test="hasExpireDate()">
+					<s:property value="days_to_expire" />
+				</s:if>
+			</td>			
 			<td align="right">
-				$<s:property value="amount" />
+				<s:property value="amountStr" />
 			</td>
 			<td>
 				<s:property value="description" />

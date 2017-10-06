@@ -336,7 +336,7 @@ public class PermitPdf extends HttpServlet {
 						cell = new PdfPCell(new Phrase("Bond Amount", fntb));
 						cell.setBorder(Rectangle.NO_BORDER);
 						table.addCell(cell);
-						cell = new PdfPCell(new Phrase("$"+bond.getAmount(), fnt));
+						cell = new PdfPCell(new Phrase(bond.getAmountStr(), fnt));
 						cell.setBorder(Rectangle.NO_BORDER);
 						table.addCell(cell);
 						cell = new PdfPCell(new Phrase("Expiration Date", fntb));

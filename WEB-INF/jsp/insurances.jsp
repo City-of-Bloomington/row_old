@@ -41,7 +41,7 @@
 				<s:property value="expire_date" />
 			</td>		
 			<td align="right">
-				$<s:property value="amount" />
+				<s:property value="amountStr" />
 			</td>
 			<td>			
 				<s:property value="notes" />

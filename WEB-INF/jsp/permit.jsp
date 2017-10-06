@@ -105,11 +105,17 @@
 					</tr>
 					<s:if test="permit.hasBond()" >
 						<tr>
-							<th>Bond </th> 
+							<th>Bond Amount</th> 
+							<td>
+								<a href="<s:property value='#application.url' />bond.action?id=<s:property value='%{permit.bond_id}' />"><s:property value="%{permit.bond.amountStr}" /></a>
+							</td>
+						</tr>
+						<tr>
+							<th>Bond</th> 
 							<td>
 								<a href="<s:property value='#application.url' />bond.action?id=<s:property value='%{permit.bond_id}' />"><s:property value="%{permit.bond.info}" /></a>
 							</td>
-						</tr>
+						</tr>						
 					</s:if>
 					<s:elseif test="permit.canPickBond()">
 						<tr>
@@ -119,11 +125,17 @@
 					</s:elseif>
 					<s:if test="permit.hasInsurance()" >
 						<tr>
+							<th>Insurance Amount</th> 
+							<td>
+								<a href="<s:property value='#application.url' />insurance.action?id=<s:property value='%{permit.insurance_id}' />"><s:property value="%{permit.insurance.amountStr}" /></a>
+							</td>
+						</tr>
+						<tr>
 							<th>Insurance </th> 
 							<td>
 								<a href="<s:property value='#application.url' />insurance.action?id=<s:property value='%{permit.insurance_id}' />"><s:property value="%{permit.insurance.info}" /></a>
 							</td>
-						</tr>
+						</tr>						
 					</s:if>					
 					<s:elseif test="permit.canPickInsurance()">
 						<tr>

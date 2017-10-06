@@ -12,12 +12,15 @@ import org.apache.log4j.Logger;
 
 public class Insurance implements java.io.Serializable{
 
-    String id="", policy_num="", expire_date="", amount="",company_contact_id="", notes="", insurance_company_id="";
-		static SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");	
+    String id="", policy_num="", expire_date="", company_contact_id="", notes="", insurance_company_id="";
+		static SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+		NumberFormat numFormat = NumberFormat.getCurrencyInstance();
 		static final long serialVersionUID = 223L;	
 		static Logger logger = Logger.getLogger(Insurance.class);
-		String permit_id="", user_id="", type="";
+		String permit_id="", user_id="", type="", old_expire_date="",fire_date="";
     String errors = "";
+		double amount = 0;
+		int days_to_expire = 0;
 		CompanyContact companyContact = null;
 		Company company = null;
 		Contact contact = null;
@@ -33,28 +36,30 @@ public class Insurance implements java.io.Serializable{
     }
     public Insurance(String val,
 				
-								String val2,
-								String val3,
-								String val4,
-								String val5,
-								String val6,
-								String val7,
+										 String val2,
+										 String val3,
+										 String val4,
+										 double val5,
+										 String val6,
+										 String val7,
 										 String val8,
-										 String val9
+										 String val9,
+										 int val10
 
 								){
-				setValues(val, val2, val3, val4, val5, val6, val7, val8, val9);
+				setValues(val, val2, val3, val4, val5, val6, val7, val8, val9, val10);
     }
 		void setValues(
 									 String val,
 									 String val2,
 									 String val3,
 									 String val4,
-									 String val5,
+									 double val5,
 									 String val6,
 									 String val7,
 									 String val8,
-									 String val9
+									 String val9,
+									 int val10
 									 ){
 				setId(val);
 				setInsurance_company_id(val2);
@@ -67,6 +72,7 @@ public class Insurance implements java.io.Serializable{
 						insuranceCompany = new Type(insurance_company_id, val8);
 				}
 				setType(val9);
+				setDays_to_expire(val10);
 		}
 		//
 		// setters
@@ -83,9 +89,8 @@ public class Insurance implements java.io.Serializable{
 				if(val != null)
 						policy_num = val;
     }
-		public void setAmount(String val){
-				if(val != null)
-						amount = val;
+		public void setAmount(double val){
+				amount = val;
     }
 		public void setType(String val){
 				if(val != null)
@@ -103,6 +108,10 @@ public class Insurance implements java.io.Serializable{
 				if(val != null)
 						expire_date = val;
     }
+		public void setOld_expire_date(String val){
+				if(val != null)
+						old_expire_date = val;
+    }		
 		public void setUser_id(String val){
 				if(val != null)
 						user_id = val;
@@ -111,6 +120,9 @@ public class Insurance implements java.io.Serializable{
 				if(val != null)
 						permit_id = val;
     }
+		public void setDays_to_expire(int val){
+				days_to_expire = val;
+		}
     //
     // getters
     //
@@ -126,9 +138,12 @@ public class Insurance implements java.io.Serializable{
 		public String getExpire_date(){
 				return expire_date;
     }
-		public String getAmount(){
+		public double getAmount(){
 				return amount;
-    }	
+    }
+		public String getAmountStr(){
+				return numFormat.format(amount);
+		}
 		public String getCompany_contact_id(){
 				return company_contact_id;
     }
@@ -138,6 +153,9 @@ public class Insurance implements java.io.Serializable{
 		public String getType(){
 				return type;
     }
+		public int getDays_to_expire(){
+				return days_to_expire;
+		}
 		public boolean equals(Object gg){
 				boolean match = false;
 				if (gg != null && gg instanceof Insurance){
@@ -151,7 +169,41 @@ public class Insurance implements java.io.Serializable{
 						code = Integer.parseInt(id);
 				}catch(Exception ex){};
 				return code;
-		}	
+		}
+		public String getExpire_status(){
+				String ret = "";
+				if(isExpired()){
+						ret = "Expired";
+				}
+				else if(isAboutToExpire()){
+						ret = "About to expire in "+days_to_expire;
+				}
+				else{
+						ret = "Active (days to expire "+days_to_expire+")";
+				}
+				return ret;
+		}
+		public String getFire_date(){
+				if(fire_date.equals("")){
+						int days_to_fire = -1;
+						if(days_to_expire > 30){
+								days_to_fire = days_to_expire-30;
+						}
+						else if(days_to_expire > 1){
+								days_to_fire = 1;
+						}
+						if(days_to_fire > 0){
+								fire_date = Helper.getDateAfter(days_to_fire);
+						}
+				}
+				return fire_date;
+		}		
+		public boolean isExpired(){
+				return hasExpireDate() && days_to_expire < 0;
+		}
+		public boolean isAboutToExpire(){
+				return days_to_expire > 0 && days_to_expire <= 30;
+		}		
 		public CompanyContact getCompanyContact(){
 				if(companyContact == null){
 						if(company_contact_id.equals("") && !permit_id.equals("")){
@@ -249,7 +301,15 @@ public class Insurance implements java.io.Serializable{
 		public boolean hasPermit(){
 				getPermit();
 				return !permit_id.equals("");
-		}	
+		}
+		public boolean hasExpireDate(){
+				return !expire_date.equals("");
+		}
+		// we need this to check if there is a change in
+		// expire date, for qurtz schedular for update
+		public boolean expireDateChanged(){
+				return !id.equals("") && !expire_date.equals(old_expire_date);
+		}		
 		private void findCompanyContactFromPermit(){
 				if(permit == null){
 						getPermit();
@@ -294,7 +354,7 @@ public class Insurance implements java.io.Serializable{
 		
 				String qq = "select b.id,b.insurance_company_id,b.policy_num,"+
 						" date_format(b.expire_date,'%m/%d/%Y'),b.amount,"+
-						" b.company_contact_id,b.notes,c.name,b.type "+
+						" b.company_contact_id,b.notes,c.name,b.type,datediff(b.expire_date,now()) "+
 						" from insurances b "+
 						" left join bond_companies c on c.id=b.insurance_company_id "+
 						" where b.id=?";
@@ -316,11 +376,12 @@ public class Insurance implements java.io.Serializable{
 															rs.getString(2),
 															rs.getString(3),
 															rs.getString(4),
-															rs.getString(5),
+															rs.getDouble(5),
 															rs.getString(6),
 															rs.getString(7),
 															rs.getString(8),
-															rs.getString(9)
+															rs.getString(9),
+															rs.getInt(10)
 															);
 								}
 						}
@@ -373,6 +434,8 @@ public class Insurance implements java.io.Serializable{
 				finally{
 						Helper.databaseDisconnect(con, pstmt, rs);
 				}
+				if(msg.equals(""))
+						msg = doSelect();
 				return msg;
     }	
 		public String setFields(PreparedStatement pstmt){
@@ -393,10 +456,7 @@ public class Insurance implements java.io.Serializable{
 								pstmt.setNull(jj++, Types.DATE);
 						else
 								pstmt.setDate(jj++, new java.sql.Date(dateFormat.parse(expire_date).getTime()));				
-						if(amount.equals(""))
-								pstmt.setNull(jj++, Types.DOUBLE);
-						else						
-								pstmt.setString(jj++, amount);
+						pstmt.setDouble(jj++, amount);
 						if(company_contact_id.equals(""))
 								pstmt.setNull(jj++, Types.INTEGER);
 						else
@@ -455,6 +515,8 @@ public class Insurance implements java.io.Serializable{
 				finally{
 						Helper.databaseDisconnect(con, pstmt, rs);
 				}
+				if(msg.equals(""))
+						msg = doSelect();
 				return msg;
 		}
 		public String doDelete(){

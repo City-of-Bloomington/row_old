@@ -20,7 +20,7 @@ public class InsuranceList{
     String limit = "20", sort_by="b.id DESC", company_id="", contact_id="",
 				id="", policy_num="", amount_from="", amount_to="", amount="", 
 				permit_num="", permit_id="", type="";
-		boolean active_only = false;
+		boolean active_only = false, aboutToExpire=false;
     public InsuranceList(){
     }
 		public List<Insurance> getInsurances(){
@@ -93,6 +93,9 @@ public class InsuranceList{
 		public void setActiveOnly(){
 				active_only = true;
 		}
+		public void setAboutToExpire(){
+				aboutToExpire = true;
+		}
 		public void setNoLimit(){
 				limit = "";
 		}
@@ -146,7 +149,7 @@ public class InsuranceList{
 		public String find(){
 		
 				String msg="", qw="";
-				String qq = "select b.id,b.insurance_company_id,b.policy_num,date_format(b.expire_date,'%m/%d/%Y'),b.amount,b.company_contact_id,b.notes,c.name,b.type ";
+				String qq = "select b.id,b.insurance_company_id,b.policy_num,date_format(b.expire_date,'%m/%d/%Y'),b.amount,b.company_contact_id,b.notes,c.name,b.type,datediff(b.expire_date,now()) ";
 				String qf = "from insurances b "+
 						" left join bond_companies c on c.id=b.insurance_company_id "+
 						" left join excavpermits p on p.insurance_id = b.id "+
@@ -214,6 +217,10 @@ public class InsuranceList{
 				if(active_only){
 						if(!qw.equals("")) qw += " and ";
 						qw += "b.expire_date > CURRENT_DATE ";
+				}
+				else if(aboutToExpire){
+						if(!qw.equals("")) qw += " and ";
+						qw += "b.expire_date > CURRENT_DATE and b.expire_date < date_add(CURDATE(), INTERVAL 30 DAY) ";
 				}
 				qq += qf;
 				if(!qw.equals("")){
@@ -284,11 +291,12 @@ public class InsuranceList{
 																							rs.getString(2),
 																							rs.getString(3),
 																							rs.getString(4),
-																							rs.getString(5),
+																							rs.getDouble(5),
 																							rs.getString(6),
 																							rs.getString(7),
 																							rs.getString(8),
-																							rs.getString(9)
+																							rs.getString(9),
+																							rs.getInt(10)
 																							);
 								if(!insurances.contains(one))
 										insurances.add(one);

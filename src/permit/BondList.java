@@ -20,7 +20,7 @@ public class BondList{
     String limit = "20", sort_by="b.id DESC", company_id="", contact_id="",
 				id="", bond_num="", amount_from="", amount_to="", amount="", type="",
 				permit_num="";
-		boolean active_only = false;
+		boolean active_only = false, aboutToExpire=false, expired=false;
     public BondList(){
     }
 		public List<Bond> getBonds(){
@@ -128,7 +128,12 @@ public class BondList{
 		public String getCompan_contact_id(){
 				return company_contact_id;
     }
-
+		public void setAboutToExpire(){
+				aboutToExpire = true;
+		}
+		public void setExpired(){
+				expired = true;
+		}
 		public String getSort_by(){
 				return sort_by;
     }	
@@ -143,12 +148,11 @@ public class BondList{
 		public String find(){
 		
 				String msg="", qw="";
-				String qq = "select b.id,b.bond_company_id,b.bond_num,date_format(b.expire_date,'%m/%d/%Y'),b.amount,b.company_contact_id,b.notes,c.name,b.description,b.type ";
+				String qq = "select b.id,b.bond_company_id,b.bond_num,date_format(b.expire_date,'%m/%d/%Y'),b.amount,b.company_contact_id,b.notes,c.name,b.description,b.type,if(b.expire_date is null, -1, datediff(b.expire_date, now())) ";
 				String qf = "from bonds b "+
 						" left join bond_companies c on c.id=b.bond_company_id "+
 						" left join excavpermits p on p.bond_id = b.id "+
 						" left join company_contacts cc on b.company_contact_id = cc.id ";
-				
 				Connection con = null;
 				PreparedStatement pstmt = null;
 				ResultSet rs = null;
@@ -207,6 +211,14 @@ public class BondList{
 				if(active_only){
 						if(!qw.equals("")) qw += " and ";
 						qw += "b.expire_date > CURRENT_DATE ";
+				}
+				else if(expired){
+						if(!qw.equals("")) qw += " and ";
+						qw += "b.expire_date < CURRENT_DATE ";
+				}
+				else if(aboutToExpire){
+						if(!qw.equals("")) qw += " and ";
+						qw += "b.expire_date > CURRENT_DATE and b.expire_date < date_add(CURDATE(), INTERVAL 30 DAY) ";
 				}
 				qq += qf;
 				if(!qw.equals("")){
@@ -269,17 +281,17 @@ public class BondList{
 						bonds = new ArrayList<Bond>();
 						rs = pstmt.executeQuery();
 						while(rs.next()){
-				
 								Bond one = new Bond(rs.getString(1),
 																		rs.getString(2),
 																		rs.getString(3),
 																		rs.getString(4),
-																		rs.getString(5),
+																		rs.getDouble(5),
 																		rs.getString(6),
 																		rs.getString(7),
 																		rs.getString(8),
 																		rs.getString(9),
-																		rs.getString(10)
+																		rs.getString(10),
+																		rs.getInt(11)
 																		);
 								if(!bonds.contains(one))
 										bonds.add(one);

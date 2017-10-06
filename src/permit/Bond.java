@@ -12,11 +12,14 @@ import org.apache.log4j.Logger;
 
 public class Bond implements java.io.Serializable{
 
-    String id="", bond_num="", expire_date="", amount="",company_contact_id="", notes="", bond_company_id="", description="";
-		static SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");	
+    String id="", bond_num="", expire_date="", company_contact_id="", notes="", bond_company_id="", description="";
+		static SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+		NumberFormat numFormat = NumberFormat.getCurrencyInstance();
 		static final long serialVersionUID = 222L;	
 		static Logger logger = Logger.getLogger(Bond.class);
-		String permit_id="", user_id="";
+		String permit_id="", user_id="", old_expire_date="", fire_date="";
+		int days_to_expire = -1;
+		double amount = 0;
     String errors = "";
 		CompanyContact companyContact = null;
 		Company company = null;
@@ -37,26 +40,28 @@ public class Bond implements java.io.Serializable{
 								String val2,
 								String val3,
 								String val4,
-								String val5,
+								double val5,
 								String val6,
 								String val7,
 								String val8,
 								String val9,
-								String val10
+								String val10,
+								int val11
 								){
-				setValues(val, val2, val3, val4, val5, val6, val7, val8, val9, val10);
+				setValues(val, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11);
     }
 		void setValues(
 									 String val,
 									 String val2,
 									 String val3,
 									 String val4,
-									 String val5,
+									 double val5,
 									 String val6,
 									 String val7,
 									 String val8,
 									 String val9,
-									 String val10
+									 String val10,
+									 int val11
 									 ){
 				setId(val);
 				setBond_company_id(val2);
@@ -70,6 +75,7 @@ public class Bond implements java.io.Serializable{
 				}
 				setDescription(val9);
 				setType(val10);
+				setDays_to_expire(val11);
 		
 		}
 		//
@@ -87,9 +93,12 @@ public class Bond implements java.io.Serializable{
 				if(val != null)
 						bond_num = val;
     }
-		public void setAmount(String val){
+		public void setOld_expire_date(String val){
 				if(val != null)
-						amount = val;
+						old_expire_date = val;
+    }		
+		public void setAmount(double val){
+				amount = val;
     }
 		public void setType(String val){
 				if(val != null)
@@ -118,7 +127,10 @@ public class Bond implements java.io.Serializable{
 		public void setDescription(String val){
 				if(val != null)
 						description = val;
-    }	
+    }
+		public void setDays_to_expire(int val){
+				days_to_expire = val;
+		}
     //
     // getters
     //
@@ -134,9 +146,12 @@ public class Bond implements java.io.Serializable{
 		public String getExpire_date(){
 				return expire_date;
     }
-		public String getAmount(){
+		public double getAmount(){
 				return amount;
-    }	
+    }
+		public String getAmountStr(){
+				return numFormat.format(amount);
+    }		
 		public String getType(){
 				return type;
     }
@@ -149,6 +164,54 @@ public class Bond implements java.io.Serializable{
 		public String getDescription(){
 				return description;
     }
+		public int getDays_to_expire(){
+				return days_to_expire;
+		}
+		public boolean hasExpireStatus(){
+				return !getExpire_status().equals("");
+		}
+		public String getExpire_status(){
+				String ret = "";
+				if(isExpired()){
+						ret = "Expired";
+				}
+				else if(isAboutToExpire()){
+						ret = "About to expire in "+days_to_expire;
+				}
+				else{
+						ret = "Active (days to expire "+days_to_expire+")";
+				}
+				return ret;
+		}
+		public String getFire_date(){
+				if(fire_date.equals("")){
+						int days_to_fire = -1;
+						if(days_to_expire > 30){
+								days_to_fire = days_to_expire-30;
+						}
+						else if(days_to_expire > 1){
+								days_to_fire = 1;
+						}
+						if(days_to_fire > 0){
+								fire_date = Helper.getDateAfter(days_to_fire);
+						}
+				}
+				return fire_date;
+		}
+		public boolean isExpired(){
+				return hasExpireDate() && days_to_expire < 0;
+		}
+		public boolean isAboutToExpire(){
+				return days_to_expire > 0 && days_to_expire <= 30;
+		}
+		public boolean hasExpireDate(){
+				return !expire_date.equals("");
+		}
+		// we need this to check if there is a change in
+		// expire date, for qurtz schedular for update
+		public boolean expireDateChanged(){
+				return !id.equals("") && !expire_date.equals(old_expire_date);
+		}
 		public boolean equals(Object gg){
 				boolean match = false;
 				if (gg != null && gg instanceof Bond){
@@ -304,7 +367,8 @@ public class Bond implements java.io.Serializable{
 		
 				String qq = "select b.id,b.bond_company_id,b.bond_num,"+
 						" date_format(b.expire_date,'%m/%d/%Y'),b.amount,"+
-						" b.company_contact_id,b.notes,c.name, b.description,b.type "+
+						" b.company_contact_id,b.notes,c.name, b.description,b.type, "+
+						" if (b.expire_date is null, -1, datediff(b.expire_date, now())) "+
 						" from bonds b "+
 						" left join bond_companies c on c.id=b.bond_company_id "+
 						" where b.id=?";
@@ -326,12 +390,13 @@ public class Bond implements java.io.Serializable{
 															rs.getString(2),
 															rs.getString(3),
 															rs.getString(4),
-															rs.getString(5),
+															rs.getDouble(5),
 															rs.getString(6),
 															rs.getString(7),
 															rs.getString(8),
 															rs.getString(9),
-															rs.getString(10)
+															rs.getString(10),
+															rs.getInt(11)
 															);
 								}
 						}
@@ -384,6 +449,8 @@ public class Bond implements java.io.Serializable{
 				finally{
 						Helper.databaseDisconnect(con, pstmt, rs);
 				}
+				if(msg.equals(""))
+						msg = doSelect();
 				return msg;
     }	
 		public String setFields(PreparedStatement pstmt){
@@ -404,10 +471,7 @@ public class Bond implements java.io.Serializable{
 								pstmt.setNull(jj++, Types.DATE);
 						else
 								pstmt.setDate(jj++, new java.sql.Date(dateFormat.parse(expire_date).getTime()));				
-						if(amount.equals(""))
-								pstmt.setNull(jj++, Types.DOUBLE);
-						else						
-								pstmt.setString(jj++, amount);
+						pstmt.setDouble(jj++, amount);
 						if(company_contact_id.equals(""))
 								pstmt.setNull(jj++, Types.INTEGER);
 						else
@@ -472,6 +536,8 @@ public class Bond implements java.io.Serializable{
 				finally{
 						Helper.databaseDisconnect(con, pstmt, rs);
 				}
+				if(msg.equals(""))
+						msg = doSelect();
 				return msg;
 		}
 		public String doDelete(){

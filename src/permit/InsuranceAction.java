@@ -47,6 +47,23 @@ public class InsuranceAction extends TopAction{
 								id = insurance.getId();
 								//
 								addActionMessage("Saved Successfully");
+								if(insurance.hasExpireDate() && !insurance.isExpired()){
+										// add schedular here
+										ExpireScheduler shed = new ExpireScheduler();
+										shed.setType("insurance");
+										shed.setExpire_date(insurance.getExpire_date());
+										shed.setFire_date(insurance.getFire_date());
+										shed.setId(id);
+										shed.setUrl(url);
+										if(activeMail)
+												shed.setActiveMail();										
+										try{
+												shed.run();
+										}catch(Exception ex){
+												back += ex;
+										}
+
+								}								
 						}
 				}
 				else if(action.equals("Update")){
@@ -58,6 +75,23 @@ public class InsuranceAction extends TopAction{
 						}
 						else{
 								addActionMessage("Updated Successfully");
+								if(insurance.expireDateChanged()){
+										// update schedular if expire date changed
+										ExpireScheduler shed = new ExpireScheduler();
+										shed.setUrl(url);
+										if(activeMail)
+												shed.setActiveMail();
+										shed.setType("insurance");
+										shed.setExpire_date(insurance.getExpire_date());
+										shed.setFire_date(insurance.getFire_date());
+										shed.setId(insurance.getId());
+										shed.setNeedClean();
+										try{
+												shed.run();
+										}catch(Exception ex){
+												back += ex;
+										}
+								}								
 						}
 				}
 				else if(!company_contact_id.equals("") || !permit_id.equals("")){

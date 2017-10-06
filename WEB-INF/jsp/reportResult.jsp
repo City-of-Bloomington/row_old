@@ -36,6 +36,16 @@
   <s:set var="bondsTitle" value="report.title" />
   <%@  include file="bonds.jsp" %>
 </s:elseif>
+<s:elseif test="report.report_type == 'bondAbout'">
+  <s:set var="bonds" value="report.list" />
+  <s:set var="bondsTitle" value="report.title" />
+  <%@  include file="bonds.jsp" %>
+</s:elseif>
+<s:elseif test="report.report_type == 'insurAbout'">
+  <s:set var="insurances" value="report.list" />
+  <s:set var="insurancesTitle" value="report.title" />
+  <%@  include file="insurances.jsp" %>
+</s:elseif>
 <%@  include file="footer.jsp" %>
 
 

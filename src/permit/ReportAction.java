@@ -56,6 +56,8 @@ public class ReportAction extends TopAction{
 						report_types.add(new Type("patch","Temporary Patch"));
 						report_types.add(new Type("bond","Active Bonds"));
 						report_types.add(new Type("bond0","Zero Bonds"));
+						report_types.add(new Type("bondAbout","About To Expire Bonds"));
+						report_types.add(new Type("insurAbout","About To Expire Insurances"));						
 				}
 				return report_types;
 		}

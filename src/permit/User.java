@@ -40,6 +40,14 @@ public class User implements java.io.Serializable{
 								String val4,
 								String val5
 								){
+				setValues(val, val2, val3, val4, val5);
+		}
+		void setValues(
+									 String val,
+									 String val2,
+									 String val3,
+									 String val4,
+									 String val5){
 				setId(val);
 				setEmpid(val2);
 				setFullName(val3);

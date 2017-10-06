@@ -12,6 +12,7 @@
 	</s:if>
   <s:else>
 		<s:hidden name="bond.id" value="%{bond.id}" />
+		<s:hidden name="bond.old_expire_date" value="%{bond.expire_date}" />		
 		<h3>Edit Bond <s:property value="bond.id" /></h3>
   </s:else>
   <s:if test="bond.company_contact_id != ''">
@@ -72,6 +73,12 @@
 			<th>Expire Date </th> 
 			<td><s:textfield name="bond.expire_date" size="10" value="%{bond.expire_date}" maxlength="10" required="true" cssClass="date" /> *</td>
 		  </tr>
+			<s:if test="bond.hasExpireDate()">
+				<tr>
+					<th>Days to Expire </th> 
+					<td><s:property value="%{bond.days_to_expire}" /></td>
+				</tr>
+			</s:if>
 		  <tr>
 			<th>Amount </th> 
 			<td>$<s:textfield name="bond.amount" size="12" value="%{bond.amount}" maxlength="12" required="true" /> *</td>

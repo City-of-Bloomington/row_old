@@ -32,10 +32,17 @@
       <action name="contact" 
               class="permit.ContactAction" 
               method="execute">
-		<result>/WEB-INF/jsp/contact.jsp</result> 
-		<result name="input">/WEB-INF/jsp/contact.jsp</result>
-		<result name="error">/WEB-INF/jsp/contact.jsp</result>		
+				<result>/WEB-INF/jsp/contact.jsp</result> 
+				<result name="input">/WEB-INF/jsp/contact.jsp</result>
+				<result name="error">/WEB-INF/jsp/contact.jsp</result>		
       </action>
+      <action name="reschedule" 
+              class="permit.RescheduleAction" 
+              method="execute">
+				<result>/WEB-INF/jsp/reschedule.jsp</result> 
+				<result name="input">/WEB-INF/jsp/reschedule.jsp</result>
+				<result name="error">/WEB-INF/jsp/reschedule.jsp</result>		
+      </action>			
       <action name="company" 
               class="permit.CompanyAction" 
               method="execute">

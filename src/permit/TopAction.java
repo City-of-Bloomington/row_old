@@ -30,6 +30,7 @@ public abstract class TopAction extends ActionSupport implements SessionAware, S
    
 		String action="", url="", checkAddrUrl="", id="";
 		static Logger logger = Logger.getLogger(TopAction.class);
+		static boolean activeMail = false;
 		User user = null;
 	  ServletContext ctx;
 		Map<String, Object> sessionMap;
@@ -69,6 +70,9 @@ public abstract class TopAction extends ActionSupport implements SessionAware, S
 								val = ctx.getInitParameter("checkAddrUrl");
 								if(val != null)
 										checkAddrUrl = val;
+								val = ctx.getInitParameter("activeMail");
+								if(val != null && val.equals("true"))
+										activeMail = true;								
 						}
 				}catch(Exception ex){
 						System.out.println(ex);

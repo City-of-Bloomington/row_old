@@ -78,9 +78,23 @@
 				</tr>
 				<s:if test="permit.hasBond()" >
 					<tr>
-						<th>Bond </th> 
-						<td>$<s:property value="%{permit.bond.amount}" /></td>
+						<th>Bond Amount</th> 
+						<td><s:property value="%{permit.bond.amountStr}" /></td>
 					</tr>
+					<tr>
+						<th>Bond</th> 
+						<td><s:property value="%{permit.bond.info}" /></td>
+					</tr>					
+				</s:if>
+				<s:if test="permit.hasInsurance()" >
+					<tr>
+						<th>Insurance Amount</th> 
+						<td><s:property value="%{permit.insurance.amountStr}"</td>
+					</tr>
+					<tr>
+						<th>Insurance </th> 
+						<td><s:property value="%{permit.insurance.info}"</td>
+					</tr>					
 				</s:if>
 				<tr>
 					<th valign="top">Notes </th> 

@@ -46,8 +46,29 @@ public class BondAction extends TopAction{
 						}
 						else{
 								id = bond.getId();
-								//
-								addActionMessage("Saved Successfully");
+								if(bond.hasExpireDate() && !bond.isExpired()){
+										// add schedular here
+										ExpireScheduler shed = new ExpireScheduler();
+										shed.setType("bond");
+										shed.setUrl(url);
+										if(activeMail)
+												shed.setActiveMail();
+										shed.setExpire_date(bond.getExpire_date());
+										shed.setFire_date(bond.getFire_date());
+										shed.setId(id);
+										try{
+												shed.run();
+										}catch(Exception ex){
+												back += ex;
+												System.err.println(ex);
+										}
+								}
+								if(!back.equals("")){
+										addActionError(back);
+								}
+								else{
+										addActionMessage("Saved Successfully");
+								}
 						}
 				}
 				else if(action.equals("Update")){
@@ -59,6 +80,25 @@ public class BondAction extends TopAction{
 						}
 						else{
 								addActionMessage("Updated Successfully");
+								if(bond.expireDateChanged()){
+										// update schedular if expire date changed
+										ExpireScheduler shed = new ExpireScheduler();
+										shed.setUrl(url);
+										if(activeMail)
+												shed.setActiveMail();
+										shed.setType("bond");
+										shed.setExpire_date(bond.getExpire_date());
+										shed.setFire_date(bond.getFire_date());
+										shed.setId(bond.getId());
+										shed.setNeedClean();
+										try{
+												shed.run();
+										}catch(Exception ex){
+												back += ex;
+										}
+										
+
+								}
 						}
 				}
 				else if(!company_contact_id.equals("") || !permit_id.equals("")){

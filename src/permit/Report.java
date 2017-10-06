@@ -80,7 +80,23 @@ public class Report{
 						//
 						msg = getZeroBonds();
 						title = "Zero Bonds ("+list.size()+")";				
-				}		
+				}
+				else if(report_type.equals("bondAbout")){
+						//
+						msg = getAboutToExpireBonds();
+						if(list != null && list.size() > 0)
+								title = "About To Expire Bonds ("+list.size()+")";
+						else
+								title = "No match found ";
+				}
+				else if(report_type.equals("insurAbout")){
+						//
+						msg = getAboutToExpireInsurances();
+						if(list != null && list.size() > 0)
+								title = "About To Expire insurances ("+list.size()+")";
+						else
+								title = "No match found ";
+				}				
 				return msg;
 		}
 		/**
@@ -144,6 +160,30 @@ public class Report{
 				}
 				return back;
 		}
+		public String getAboutToExpireBonds(){
+
+				BondList el = new BondList();
+				el.setAboutToExpire();
+				el.setSort_by("c.name ASC"); // company name
+				el.setNoLimit();
+				String back = el.find();
+				if(back.equals("")){
+						list =  el.getBonds();
+				}
+				return back;
+		}
+		public String getAboutToExpireInsurances(){
+
+				InsuranceList el = new InsuranceList();
+				el.setAboutToExpire();
+				el.setSort_by("c.name ASC"); // company name
+				el.setNoLimit();
+				String back = el.find();
+				if(back.equals("")){
+						list =  el.getInsurances();
+				}
+				return back;
+		}				
 		public String getZeroBonds(){
 
 				BondList el = new BondList();

@@ -53,7 +53,8 @@
 			  <div class="menuLinks closed">
 				<a href="<s:property value='#application.url'/>type.action">Edit Categories</a>
 				<a href="<s:property value='#application.url'/>statsReport.action">Stats Reports</a>
-				<a href="<s:property value='#application.url'/>report.action">Detailed Reports</a>				
+				<a href="<s:property value='#application.url'/>report.action">Detailed Reports</a>
+				<a href="<s:property value='#application.url'/>reschedule.action">Reschedule Notifications</a>				
 			  </div>
 			</nav>
 		  </s:if>

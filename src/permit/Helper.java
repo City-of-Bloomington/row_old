@@ -193,7 +193,20 @@ public class Helper{
 				day += dd;
 				return month+"/"+day+"/"+year;
     }
+		public final static String getDateAfter(int days){
+				String day="",month="",year="";
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.DATE, days);
+				int mm =  (cal.get(Calendar.MONTH)+1);
+				int dd =   cal.get(Calendar.DATE);
+				year = ""+ cal.get(Calendar.YEAR);
+				if(mm < 10) month = "0";
+				month += mm;
+				if(dd < 10) day = "0";
+				day += dd;
+				return month+"/"+day+"/"+year;
 
+		}
 		public final static String find3MonthFrom(String date){
 				String ret = "";
 				int mm=0,dd=0,yy = 0;

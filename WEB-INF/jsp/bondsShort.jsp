@@ -21,6 +21,7 @@
 		<td>Bond Company</td>
 		<td>Bond Number</td>
 		<td>Expire Date</td>
+		<td>Expire Notification Date</td>
 		<td>Amount</td>
 		<td>Type</td>
 		<td>Notes</td>
@@ -38,9 +39,12 @@
 			</td>
 			<td>
 				<s:property value="expire_date" />
-			</td>		
+			</td>
+			<td>
+				<s:property value="fire_date" />
+			</td>			
 			<td align="right">
-				$<s:property value="amount" />
+				<s:property value="amountStr" />
 			</td>
 			<td>
 				<s:property value="type" />

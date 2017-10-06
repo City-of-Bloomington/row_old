@@ -24,7 +24,7 @@ public class ContactList{
 				setType_id(val);
     }
 		public void setType_id(String val){
-				if(val != null)
+				if(val != null && !val.equals("-1"))
 						type_id = val;
 		}
 		public List<Contact> getContacts(){
@@ -59,7 +59,7 @@ public class ContactList{
 						phone = val;
 		}
 		public void setSort_by(String val){
-				if(val != null)
+				if(val != null && !val.equals("-1"))
 						sort_by = val;
 		}
 		public void setNo_limit(){
@@ -88,6 +88,11 @@ public class ContactList{
 		}
 		public String getSort_by(){
 				return sort_by;
+		}
+		public String getType_id(){
+				if(type_id.equals(""))
+						return "-1";
+				return type_id;
 		}		
     /**
 		 * find all contacts in the database

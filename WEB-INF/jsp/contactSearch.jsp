@@ -52,7 +52,7 @@
 					</tr>
 					<tr>
 						<th>Contact Type </th>			   
-						<td><s:select name="contact.type_id" list="types" listKey="id" listValue="name" headerKey="-1" headerValue="" /></td>
+						<td><s:select name="contactList.type_id" list="types" listKey="id" listValue="name" headerKey="-1" headerValue="All" /></td>
 					</tr>
 					<tr>
 						<th>Sort by</th>

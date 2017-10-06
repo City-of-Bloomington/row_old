@@ -22,7 +22,9 @@ public class Company implements java.io.Serializable{
 		List<Permit> permits = null;
 		List<Invoice> invoices = null;
 		List<Bond> bonds = null;	
-		List<Insurance> insurances = null;		
+		List<Insurance> insurances = null;
+		Bond latestBond = null;
+		Insurance latestInsurance = null;
 		String[] add_contacts = null;
 		String[] sel_company_contact = null;// selected ones for further actions
     public Company(){
@@ -233,6 +235,7 @@ public class Company implements java.io.Serializable{
 								List<Bond> list = ccl.getBonds();
 								if(list != null && list.size() > 0){
 										bonds = list;
+										latestBond = bonds.get(0);
 								}
 						}
 				}
@@ -248,7 +251,9 @@ public class Company implements java.io.Serializable{
 								List<Insurance> list = ccl.getInsurances();
 								if(list != null && list.size() > 0){
 										insurances = list;
+										latestInsurance = insurances.get(0);
 								}
+								
 						}
 				}
 				return insurances;
@@ -275,7 +280,19 @@ public class Company implements java.io.Serializable{
 		public boolean hasInsurances(){
 				getInsurances();
 				return (insurances != null && insurances.size() > 0);
-		}		
+		}
+		public Bond getLatestBond(){
+				if(latestBond == null){
+						getBonds();
+				}
+				return latestBond;
+		}
+		public Insurance getLatestInsurance(){
+				if(latestInsurance == null){
+						getInsurances();
+				}
+				return latestInsurance;
+		}
 		public boolean equals(Object gg){
 				boolean match = false;
 				if (gg != null && gg instanceof Company){
